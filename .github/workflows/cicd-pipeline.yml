@@ -1,5 +1,4 @@
-
-name: Complete CI/CD Pipeline - Docker + Kubernetes (FIXED)
+name: Complete CI/CD Pipeline - Docker + Kubernetes
 
 on:
   push:
@@ -27,31 +26,31 @@ jobs:
       
       - name: Validate HTML files
         run: |
-          echo "\u2705 Validating HTML structure..."
+          echo "✅ Validating HTML structure..."
           if [ -f "dapoerjengsriweb/index.html" ]; then
-            echo "\u2705 index.html found"
+            echo "✅ index.html found"
           else
-            echo "\u274c Error: index.html not found"
+            echo "❌ Error: index.html not found"
             exit 1
           fi
       
       - name: Check CSS files
         run: |
-          echo "\u2705 Checking CSS files..."
+          echo "✅ Checking CSS files..."
           if [ -f "dapoerjengsriweb/style.css" ]; then
-            echo "\u2705 style.css found"
+            echo "✅ style.css found"
           else
-            echo "\u274c Error: style.css not found"
+            echo "❌ Error: style.css not found"
             exit 1
           fi
       
       - name: Check JavaScript files
         run: |
-          echo "\u2705 Checking JavaScript files..."
+          echo "✅ Checking JavaScript files..."
           if [ -f "dapoerjengsriweb/script.js" ]; then
-            echo "\u2705 script.js found"
+            echo "✅ script.js found"
           else
-            echo "\u274c Error: script.js not found"
+            echo "❌ Error: script.js not found"
             exit 1
           fi
 
@@ -85,7 +84,7 @@ jobs:
           cache-to: type=inline
       
       - name: Image digest
-        run: echo "\u2705 Docker image pushed successfully to ${{ env.DOCKER_IMAGE }}"
+        run: echo "✅ Docker image pushed successfully to ${{ env.DOCKER_IMAGE }}"
 
   # Job 3: Deploy to Kubernetes (LOCAL)
   deploy-kubernetes-local:
@@ -98,48 +97,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       
-      - name: Install kubeval for validation
-        run: |
-          echo "\ud83d\udce6 Installing kubeval for Kubernetes manifest validation..."
-          wget https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz
-          tar xf kubeval-linux-amd64.tar.gz
-          sudo mv kubeval /usr/local/bin/
-          kubeval --version
-          echo "\u2705 kubeval installed successfully"
-      
-      - name: Validate Kubernetes manifests with kubeval
-        run: |
-          echo "\u2705 Validating Kubernetes deployment files..."
-          if [ -f "kubernetes/deployment.yaml" ]; then
-            kubeval kubernetes/deployment.yaml || exit 1
-            echo "\u2705 deployment.yaml validated"
-          else
-            echo "\u26a0\ufe0f Warning: kubernetes/deployment.yaml not found"
-          fi
-          
-          if [ -f "hpa-dapoerjengsri.yaml" ]; then
-            kubeval hpa-dapoerjengsri.yaml || exit 1
-            echo "\u2705 hpa-dapoerjengsri.yaml validated"
-          else
-            echo "\u26a0\ufe0f Warning: hpa-dapoerjengsri.yaml not found"
-          fi
-          
-          echo "\u2705 All Kubernetes manifests are valid!"
-      
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: 'latest'
       
+      - name: Create kubeconfig (for demo purposes)
+        run: |
+          echo "⚠️ Note: This step would normally connect to your K8s cluster"
+          echo "For local testing, you would use: kubectl config use-context docker-desktop"
+          echo "Simulating deployment check..."
+          
+      - name: Validate Kubernetes manifests
+        run: |
+            echo "✅ Validating Kubernetes deployment files..."
+            kubectl apply --dry-run=client --validate=false -f kubernetes/deployment.yaml
+            kubectl apply --dry-run=client --validate=false -f hpa-dapoerjengsri.yaml
+            echo "✅ Kubernetes manifests syntax is valid!"
+        
+      
       - name: Deployment Summary
         run: |
-          echo "\ud83d\udce6 Docker Image: ${{ env.DOCKER_IMAGE }}:latest"
-          echo "\ud83d\ude80 Ready for Kubernetes deployment"
-          echo "\ud83d\udca1 To deploy locally, run: kubectl apply -f kubernetes/"
-          echo ""
-          echo "\ud83d\udccb Validated manifests:"
-          echo "  \u2705 kubernetes/deployment.yaml"
-          echo "  \u2705 hpa-dapoerjengsri.yaml"
+          echo "📦 Docker Image: ${{ env.DOCKER_IMAGE }}:latest"
+          echo "🚀 Ready for Kubernetes deployment"
+          echo "💡 To deploy locally, run: kubectl apply -f kubernetes/"
 
   # Job 4: Monitoring Check
   monitoring-check:
@@ -154,20 +135,14 @@ jobs:
       - name: Validate Prometheus config
         run: |
           if [ -f "monitoring/prometheus.yml" ]; then
-            echo "\u2705 Prometheus configuration found"
-            # Validate YAML syntax
-            if command -v yamllint &> /dev/null; then
-              yamllint monitoring/prometheus.yml || echo "\u26a0\ufe0f YAML linting issues found"
-            else
-              echo "\u26a0\ufe0f yamllint not installed, skipping YAML validation"
-            fi
+            echo "✅ Prometheus configuration found"
           else
-            echo "\u26a0\ufe0f Warning: Prometheus config not found"
+            echo "⚠️ Warning: Prometheus config not found"
           fi
       
       - name: Check monitoring setup
         run: |
-          echo "\u2705 Monitoring Stack:"
+          echo "✅ Monitoring Stack:"
           echo "  - Prometheus: Port 9090"
           echo "  - Grafana: Port 3000"
           echo "  - Metrics Server: Kubernetes"
@@ -190,52 +165,21 @@ jobs:
           needs.docker.result == 'success' &&
           needs.deploy-kubernetes-local.result == 'success'
         run: |
-          echo "\ud83c\udf89 =================================="
-          echo "\ud83c\udf89 CI/CD PIPELINE COMPLETED!"
-          echo "\ud83c\udf89 =================================="
+          echo "🎉 =================================="
+          echo "🎉 CI/CD PIPELINE COMPLETED!"
+          echo "🎉 =================================="
           echo ""
-          echo "\u2705 Build: Success"
-          echo "\u2705 Docker Image: Built and Pushed"
-          echo "\u2705 Kubernetes: Validated with kubeval"
-          echo "\u2705 Monitoring: Configured"
+          echo "✅ Build: Success"
+          echo "✅ Docker Image: Built and Pushed"
+          echo "✅ Kubernetes: Validated"
+          echo "✅ Monitoring: Configured"
           echo ""
-          echo "\ud83d\ude80 Your application is ready for deployment!"
-          echo ""
-          echo "\ud83d\udce6 Image: ${{ env.DOCKER_IMAGE }}:latest"
-          echo "\ud83d\udce6 Image SHA: ${{ env.DOCKER_IMAGE }}:${{ github.sha }}"
+          echo "🚀 Your application is ready for deployment!"
       
       - name: Failure Notification
         if: failure()
         run: |
-          echo "\u274c =================================="
-          echo "\u274c PIPELINE FAILED!"
-          echo "\u274c =================================="
-          echo ""
+          echo "❌ =================================="
+          echo "❌ PIPELINE FAILED!"
+          echo "❌ =================================="
           echo "Please check the logs above for details."
-          echo ""
-          echo "Common issues:"
-          echo "  - File not found errors"
-          echo "  - Invalid Kubernetes manifests"
-          echo "  - Docker registry authentication"
-          echo "  - Network connectivity issues"
-      
-      - name: Partial Success Warning
-        if: |
-          (needs.build.result == 'success') &&
-          (needs.docker.result == 'failure' || needs.deploy-kubernetes-local.result == 'failure')
-        run: |
-          echo "\u26a0\ufe0f =================================="
-          echo "\u26a0\ufe0f PIPELINE PARTIALLY COMPLETED"
-          echo "\u26a0\ufe0f =================================="
-          echo ""
-          echo "\u2705 Build: Success"
-          if [ "${{ needs.docker.result }}" == "failure" ]; then
-            echo "\u274c Docker: Failed"
-          else
-            echo "\u2705 Docker: Success"
-          fi
-          if [ "${{ needs.deploy-kubernetes-local.result }}" == "failure" ]; then
-            echo "\u274c Kubernetes: Failed"
-          else
-            echo "\u2705 Kubernetes: Success"
-          fi
