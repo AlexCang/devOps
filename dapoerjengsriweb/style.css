@@ -88,6 +88,15 @@ nav a:hover {
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
+.btn-download {
+    background: #27ae60;
+    color: white;
+}
+
+.btn-download:hover {
+    background: #229954;
+}
+
 .content {
     padding: 3rem 0;
 }

@@ -25,7 +25,10 @@
             <div class="container">
                 <h2>Welcome to Dapoer Jengsri</h2>
                 <p>Experience the finest flavors from around the world</p>
-                <a href="#" onclick="showPage('discounts')" class="btn">View Special Offers</a>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="#" onclick="showPage('discounts')" class="btn">View Special Offers</a>
+                    <a href="DapoerJengSri.apk" download class="btn btn-download" onclick="return confirmDownload()">📱 Download Mobile App</a>
+                </div>
             </div>
         </div>
 
@@ -214,108 +217,113 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        function confirmDownload() {
+            return confirm("Are you sure you want to download the mobile app?");
+        }
+    </script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
-      
+    
         const firebaseConfig = {
-          apiKey: "AIzaSyCiByrFQgSX8_fLfIxTg8Oo_R1EcCy2xFw",
-          authDomain: "dapoerjengsri-aa037.firebaseapp.com",
-          projectId: "dapoerjengsri-aa037",
-          storageBucket: "dapoerjengsri-aa037.firebasestorage.app",
-          messagingSenderId: "136656874312",
-          appId: "1:136656874312:web:0c61047a16a1fc3fe0a17d",
-          measurementId: "G-1P15TYDBZ3"
+        apiKey: "AIzaSyCiByrFQgSX8_fLfIxTg8Oo_R1EcCy2xFw",
+        authDomain: "dapoerjengsri-aa037.firebaseapp.com",
+        projectId: "dapoerjengsri-aa037",
+        storageBucket: "dapoerjengsri-aa037.firebasestorage.app",
+        messagingSenderId: "136656874312",
+        appId: "1:136656874312:web:0c61047a16a1fc3fe0a17d",
+        measurementId: "G-1P15TYDBZ3"
         };
-      
+    
         const app = initializeApp(firebaseConfig);
         getAnalytics(app);
-      
+    
         const db = getFirestore(app);
-      
+    
         // 🔽 AMBIL DATA MAKANAN (Food)
         async function loadFoods() {
-          const foodContainer = document.getElementById("food-grid");
-          foodContainer.innerHTML = "";
-      
-          try {
+        const foodContainer = document.getElementById("food-grid");
+        foodContainer.innerHTML = "";
+    
+        try {
             const querySnapshot = await getDocs(collection(db, "Food"));
             querySnapshot.forEach((doc) => {
-              const food = doc.data();
-              foodContainer.innerHTML += `
+            const food = doc.data();
+            foodContainer.innerHTML += `
                 <div class="menu-item">
-                  <img src="${food.Image}" alt="${food.Name}">
-                  <div class="menu-item-content">
+                <img src="${food.Image}" alt="${food.Name}">
+                <div class="menu-item-content">
                     <h3>${food.Name}</h3>
                     <p>${food.Detail ?? ""}</p>
                     <p class="price">Rp ${food.Price}</p>
-                  </div>
                 </div>
-              `;
+                </div>
+            `;
             });
-          } catch (error) {
+        } catch (error) {
             console.error("Error loading foods:", error);
-          }
         }
-      
+        }
+    
         // 🔽 AMBIL DATA MINUMAN (Drink)
         async function loadDrinks() {
-          const drinkContainer = document.getElementById("drink-grid");
-          drinkContainer.innerHTML = "";
-      
-          try {
+        const drinkContainer = document.getElementById("drink-grid");
+        drinkContainer.innerHTML = "";
+    
+        try {
             const querySnapshot = await getDocs(collection(db, "Drink"));
             querySnapshot.forEach((doc) => {
-              const drink = doc.data();
-              drinkContainer.innerHTML += `
+            const drink = doc.data();
+            drinkContainer.innerHTML += `
                 <div class="menu-item">
-                  <img src="${drink.Image}" alt="${drink.Name}">
-                  <div class="menu-item-content">
+                <img src="${drink.Image}" alt="${drink.Name}">
+                <div class="menu-item-content">
                     <h3>${drink.Name}</h3>
                     <p>${drink.Detail ?? ""}</p>
                     <p class="price">Rp ${drink.Price}</p>
-                  </div>
                 </div>
-              `;
+                </div>
+            `;
             });
-          } catch (error) {
+        } catch (error) {
             console.error("Error loading drinks:", error);
-          }
         }
-      
+        }
+    
         // 🔽 AMBIL DATA SIDE DISH (SideDish)
         async function loadSideDishes() {
-          const sideDishContainer = document.getElementById("sidedish-grid");
-          sideDishContainer.innerHTML = "";
-      
-          try {
+        const sideDishContainer = document.getElementById("sidedish-grid");
+        sideDishContainer.innerHTML = "";
+    
+        try {
             const querySnapshot = await getDocs(collection(db, "SideDish"));
             querySnapshot.forEach((doc) => {
-              const sideDish = doc.data();
-              sideDishContainer.innerHTML += `
+            const sideDish = doc.data();
+            sideDishContainer.innerHTML += `
                 <div class="menu-item">
-                  <img src="${sideDish.Image}" alt="${sideDish.Name}">
-                  <div class="menu-item-content">
+                <img src="${sideDish.Image}" alt="${sideDish.Name}">
+                <div class="menu-item-content">
                     <h3>${sideDish.Name}</h3>
                     <p>${sideDish.Detail ?? ""}</p>
                     <p class="price">Rp ${sideDish.Price}</p>
-                  </div>
                 </div>
-              `;
+                </div>
+            `;
             });
-          } catch (error) {
+        } catch (error) {
             console.error("Error loading side dishes:", error);
-          }
         }
-      
+        }
+    
         // 🔽 LOAD SEMUA DATA SAAT HALAMAN DIBUKA
         async function loadMenu() {
-          await Promise.all([loadFoods(), loadDrinks(), loadSideDishes()]);
+        await Promise.all([loadFoods(), loadDrinks(), loadSideDishes()]);
         }
-      
+    
         loadMenu();
-      </script>
-      
+    </script>
+    
 </body>
 </html>
