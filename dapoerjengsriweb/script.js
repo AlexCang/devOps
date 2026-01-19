@@ -12,4 +12,4 @@ function showPage(pageId) {
     
     // Scroll to top of the page
     window.scrollTo(0, 0);
-}
+} 
